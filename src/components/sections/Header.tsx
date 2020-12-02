@@ -6,11 +6,11 @@ import { Logo } from '../ui/Logo';
 
 import { MdClose, MdMenu } from 'react-icons/md';
 
-type MenuItemsProps = {
+interface MenuItemsProps {
   to: string;
   isLast?: boolean;
   children?: React.ReactNode;
-};
+}
 
 const MenuItems: React.FC<MenuItemsProps> = (props: MenuItemsProps) => {
   const { children, isLast, to = '/', ...rest } = props;
@@ -26,7 +26,7 @@ const MenuItems: React.FC<MenuItemsProps> = (props: MenuItemsProps) => {
   );
 };
 
-const Header: React.FC = (props) => {
+export const Header: React.FC = (props) => {
   const [show, setShow] = React.useState(false);
   const toggleMenu = () => setShow(!show);
 
@@ -44,10 +44,12 @@ const Header: React.FC = (props) => {
       {...props}
     >
       <Flex align="center">
-        <Logo
-          w="100px"
-          color={['white', 'white', 'primary.500', 'primary.500']}
-        />
+        <Link to="/">
+          <Logo
+            w="100px"
+            color={['white', 'white', 'primary.500', 'primary.500']}
+          />
+        </Link>
       </Flex>
 
       <Box display={{ base: 'block', md: 'none' }} onClick={toggleMenu}>
@@ -92,5 +94,3 @@ const Header: React.FC = (props) => {
     </Flex>
   );
 };
-
-export default Header;

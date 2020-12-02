@@ -11,16 +11,16 @@ import {
 } from '@chakra-ui/react';
 import { ArrowForwardIcon } from '@chakra-ui/icons';
 
-type HeroProps = {
+export interface HeroProps {
   title?: string;
   subtitle?: string;
   image?: string;
   ctaText?: string;
   ctaLink?: string;
-};
+}
 
-const Hero: React.FC<HeroProps> = ({
-  title = 'Hey，你有新任务了！',
+export const Hero: React.FC<HeroProps> = ({
+  title = 'Hey，这里有一份召集令！',
   subtitle = '所有人都在用的众包平台，用了又用',
   image = 'https://source.unsplash.com/collection/404339/800x600',
   ctaText = '现在加入',
@@ -88,5 +88,3 @@ const Hero: React.FC<HeroProps> = ({
     </Flex>
   );
 };
-
-export default Hero;

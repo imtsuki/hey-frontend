@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { Flex } from '@chakra-ui/react';
-import Header from '../sections/Header';
+import { Header } from '../sections/Header';
 
-const LandingLayout: React.FC = (props) => (
+export const LandingLayout: React.FC = (props) => (
   <Flex
     direction="column"
     align="center"
@@ -14,5 +14,3 @@ const LandingLayout: React.FC = (props) => (
     {props.children}
   </Flex>
 );
-
-export default LandingLayout;
