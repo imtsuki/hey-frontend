@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import { Link } from 'react-router-dom';
-import { Avatar, Box, Flex, Text } from '@chakra-ui/react';
+import { Box, Flex, Text, Button } from '@chakra-ui/react';
 import { LogoExpanded } from '../ui/Logo';
 
 import { MdClose, MdMenu } from 'react-icons/md';
@@ -26,7 +26,7 @@ const MenuItems: React.FC<MenuItemsProps> = (props: MenuItemsProps) => {
   );
 };
 
-export const Header: React.FC = (props) => {
+export const LandingHeader: React.FC = (props) => {
   const [show, setShow] = React.useState(false);
   const toggleMenu = () => setShow(!show);
 
@@ -38,8 +38,7 @@ export const Header: React.FC = (props) => {
       wrap="wrap"
       w="100%"
       mb={8}
-      pt={8}
-      pb={8}
+      p={8}
       bg={['primary.500', 'primary.500', 'transparent', 'transparent']}
       color={['white', 'white', 'primary.700', 'primary.700']}
       {...props}
@@ -67,10 +66,29 @@ export const Header: React.FC = (props) => {
           direction={['column', 'row', 'row', 'row']}
           pt={[4, 4, 0, 0]}
         >
-          <MenuItems to="/home">召集令大厅</MenuItems>
-          <Link to="/profile">
-            <Avatar />
-          </Link>
+          <MenuItems to="/home">Home</MenuItems>
+          <MenuItems to="/how">How It works </MenuItems>
+          <MenuItems to="/faetures">Features </MenuItems>
+          <MenuItems to="/pricing">Pricing </MenuItems>
+          <MenuItems to="/login">登录</MenuItems>
+          <MenuItems to="/signup" isLast>
+            <Button
+              size="sm"
+              rounded="md"
+              color={['primary.500', 'primary.500', 'white', 'white']}
+              bg={['white', 'white', 'primary.500', 'primary.500']}
+              _hover={{
+                bg: [
+                  'primary.100',
+                  'primary.100',
+                  'primary.600',
+                  'primary.600',
+                ],
+              }}
+            >
+              注册
+            </Button>
+          </MenuItems>
         </Flex>
       </Box>
     </Flex>

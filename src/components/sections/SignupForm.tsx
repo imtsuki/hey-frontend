@@ -53,7 +53,6 @@ export const SignupForm = () => {
           actions.setSubmitting(false);
         }, 1000);
       }}
-      validateOnMount
     >
       {(formik) => (
         <Form>

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Flex } from '@chakra-ui/react';
-import { Header } from '../sections/Header';
+import { LandingHeader } from '../sections/LandingHeader';
 
 export const LandingLayout: React.FC = (props) => (
   <Flex
@@ -10,7 +10,7 @@ export const LandingLayout: React.FC = (props) => (
     m="0 auto"
     {...props}
   >
-    <Header />
+    <LandingHeader />
     {props.children}
   </Flex>
 );

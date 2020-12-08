@@ -1,3 +1,8 @@
 import { LoginForm } from '../components/sections/LoginForm';
+import { AuthLayout } from '../components/layouts/AuthLayout';
 
-export const Login = () => <LoginForm></LoginForm>;
+export const Login = () => (
+  <AuthLayout>
+    <LoginForm />
+  </AuthLayout>
+);
