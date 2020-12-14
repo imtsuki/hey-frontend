@@ -1,10 +1,14 @@
 import { MainLayout } from '../components/layouts/MainLayout';
 import { Card } from '../components/ui/Card';
+import { ProfileItem } from '../components/ProfileItem';
 import { Flex, Text, Stack, Box, Avatar } from '@chakra-ui/react';
-import { MissionCard } from '../components/ui/MissionCard';
+import { MissionEntryCard } from '../components/ui/MissionCard';
 import Image, { Shimmer } from 'react-shimmer';
+import { useParams } from 'react-router-dom';
 
 export const Profile = () => {
+  let { username } = useParams<{ username?: string }>();
+  let isCurrentUser = !username;
   return (
     <MainLayout>
       <Card position="relative" width="100%" p="0">
@@ -29,30 +33,43 @@ export const Profile = () => {
             <Stack ml="6" spacing="1">
               <Stack direction="row" align="baseline">
                 <Text fontSize="2xl" fontWeight="bold">
-                  Tsuki
+                  {isCurrentUser ? '当前用户' : username}
                 </Text>
-                <Text fontSize="lg" color="gray.500">
-                  这个人很懒，什么也没留下～
-                </Text>
+                <Box color="gray.500">
+                  <ProfileItem
+                    label="个人介绍"
+                    value="这个人很懒，什么也没留下～"
+                    isEditable={isCurrentUser}
+                    hideLabel
+                  />
+                </Box>
               </Stack>
+              <ProfileItem
+                label="城市"
+                value="北京"
+                isEditable={isCurrentUser}
+              />
 
-              <Text fontSize="sm">城市: 北京</Text>
-              <Text fontSize="sm">手机号: 13355011223</Text>
+              <ProfileItem
+                label="手机"
+                value="12233344556"
+                isEditable={isCurrentUser}
+              />
             </Stack>
           </Flex>
         </Flex>
       </Card>
       <Flex width="100%" justify="space-between" mt={2} zIndex={1}>
-        <Box width="100%" flex={3} mr={1}>
+        <Box width="100%" flex={7} mr={1}>
           <Stack>
-            <MissionCard></MissionCard>
-            <MissionCard></MissionCard>
-            <MissionCard></MissionCard>
-            <MissionCard></MissionCard>
-            <MissionCard></MissionCard>
+            <MissionEntryCard></MissionEntryCard>
+            <MissionEntryCard></MissionEntryCard>
+            <MissionEntryCard></MissionEntryCard>
+            <MissionEntryCard></MissionEntryCard>
+            <MissionEntryCard></MissionEntryCard>
           </Stack>
         </Box>
-        <Box width="100%" flex={1} ml={1}>
+        <Box width="100%" flex={3} ml={1}>
           <Card width="100%"></Card>
         </Box>
       </Flex>
