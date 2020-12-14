@@ -5,7 +5,18 @@ const heyTheme = {
   styles: {
     global: {
       body: {
-        backgroundColor: 'gray.50',
+        fontFamily: 'body',
+        color: 'gray.800',
+        bg: 'gray.50',
+        transition: 'background-color 0.2s',
+        lineHeight: 'base',
+      },
+      '*::placeholder': {
+        color: 'gray.400',
+      },
+      '*, *::before, &::after': {
+        borderColor: 'gray.200',
+        wordWrap: 'break-word',
       },
     },
   },

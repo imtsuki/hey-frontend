@@ -19,7 +19,7 @@ const SignupSchema = Yup.object({
     .required('请输入用户名'),
   password: Yup.string().min(8, '最短密码为 8 位').required('请输入密码'),
   passwordConfirmation: Yup.string()
-    .oneOf([Yup.ref('password')], '输入的密码不匹配')
+    .oneOf([Yup.ref('password')], '两次输入的密码不匹配')
     .required('请确认密码'),
   phone: Yup.string()
     .matches(

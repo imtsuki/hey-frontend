@@ -48,7 +48,9 @@ export const ProfileItem: React.FC<{
               <Button colorScheme="primary" mr={3} onClick={onClose}>
                 保存修改
               </Button>
-              <Button onClick={onClose}>取消</Button>
+              <Button variant="ghost" onClick={onClose}>
+                取消
+              </Button>
             </ModalFooter>
             <ModalCloseButton />
           </ModalContent>

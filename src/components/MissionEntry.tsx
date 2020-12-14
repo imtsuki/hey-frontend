@@ -3,7 +3,7 @@ import { ArrowForwardIcon } from '@chakra-ui/icons';
 
 import { Card } from './Card';
 
-export const MissionEntryCard = () => (
+export const MissionEntry = () => (
   <Card
     role="group"
     transition="linear"

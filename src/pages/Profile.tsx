@@ -1,10 +1,12 @@
-import { MainLayout } from '../components/layouts/MainLayout';
-import { Card } from '../components/ui/Card';
-import { ProfileItem } from '../components/ProfileItem';
 import { Flex, Text, Stack, Box, Avatar } from '@chakra-ui/react';
-import { MissionEntryCard } from '../components/ui/MissionCard';
 import Image, { Shimmer } from 'react-shimmer';
 import { useParams } from 'react-router-dom';
+
+import { MainLayout } from '../components/layouts/MainLayout';
+import { Card } from '../components/Card';
+import { ProfileItem } from '../components/ProfileItem';
+import { MissionEntry } from '../components/MissionEntry';
+import { ShortcutPanel } from '../components/sections/ShortcutPanel';
 
 export const Profile = () => {
   let { username } = useParams<{ username?: string }>();
@@ -62,15 +64,15 @@ export const Profile = () => {
       <Flex width="100%" justify="space-between" mt={2} zIndex={1}>
         <Box width="100%" flex={7} mr={1}>
           <Stack>
-            <MissionEntryCard></MissionEntryCard>
-            <MissionEntryCard></MissionEntryCard>
-            <MissionEntryCard></MissionEntryCard>
-            <MissionEntryCard></MissionEntryCard>
-            <MissionEntryCard></MissionEntryCard>
+            <MissionEntry></MissionEntry>
+            <MissionEntry></MissionEntry>
+            <MissionEntry></MissionEntry>
+            <MissionEntry></MissionEntry>
+            <MissionEntry></MissionEntry>
           </Stack>
         </Box>
         <Box width="100%" flex={3} ml={1}>
-          <Card width="100%"></Card>
+          <ShortcutPanel></ShortcutPanel>
         </Box>
       </Flex>
     </MainLayout>
