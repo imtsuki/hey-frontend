@@ -5,12 +5,24 @@ import * as serviceWorker from './serviceWorker';
 import reportWebVitals from './reportWebVitals';
 import { ChakraProvider, CSSReset } from '@chakra-ui/react';
 import theme from './utils/theme';
+import { makeServer } from './mock/server';
+import { QueryClient, QueryClientProvider } from 'react-query';
+import { ReactQueryDevtools } from 'react-query/devtools';
+
+const queryClient = new QueryClient();
+
+if (process.env.NODE_ENV === 'development') {
+  makeServer({ environment: 'development' });
+}
 
 ReactDOM.render(
   <React.StrictMode>
     <ChakraProvider theme={theme}>
       <CSSReset />
-      <App />
+      <QueryClientProvider client={queryClient}>
+        <App />
+        <ReactQueryDevtools initialIsOpen={false} />
+      </QueryClientProvider>
     </ChakraProvider>
   </React.StrictMode>,
   document.getElementById('root')

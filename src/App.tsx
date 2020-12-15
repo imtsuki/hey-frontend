@@ -1,5 +1,6 @@
-import { Landing } from './pages/Landing';
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
+
+import { Landing } from './pages/Landing';
 import { Home } from './pages/Home';
 import { Login } from './pages/Login';
 import { Signup } from './pages/Signup';
