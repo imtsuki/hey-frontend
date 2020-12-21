@@ -1,6 +1,6 @@
-import { Button } from '@chakra-ui/react';
-import { Stack } from '@chakra-ui/react';
-import { useToast } from '@chakra-ui/react';
+import { Button } from "@chakra-ui/react";
+import { Stack } from "@chakra-ui/react";
+import { useToast } from "@chakra-ui/react";
 import {
   Modal,
   ModalOverlay,
@@ -9,22 +9,22 @@ import {
   ModalFooter,
   ModalBody,
   ModalCloseButton,
-} from '@chakra-ui/react';
+} from "@chakra-ui/react";
 import {
   FormControl,
   FormLabel,
   FormErrorMessage,
   Input,
-} from '@chakra-ui/react';
-import { Form, Formik } from 'formik';
-import * as Yup from 'yup';
+} from "@chakra-ui/react";
+import { Form, Formik } from "formik";
+import * as Yup from "yup";
 
 const EditPasswordSchema = Yup.object({
-  oldPassword: Yup.string().required('请输入原密码'),
-  newPassword: Yup.string().min(8, '最短密码为 8 位').required('请输入新密码'),
+  oldPassword: Yup.string().required("请输入原密码"),
+  newPassword: Yup.string().min(8, "最短密码为 8 位").required("请输入新密码"),
   newPasswordConfirmation: Yup.string()
-    .oneOf([Yup.ref('newPassword')], '两次输入的密码不匹配')
-    .required('请确认新密码'),
+    .oneOf([Yup.ref("newPassword")], "两次输入的密码不匹配")
+    .required("请确认新密码"),
 });
 
 export const EditPasswordModal: React.FC<{
@@ -38,22 +38,51 @@ export const EditPasswordModal: React.FC<{
       <ModalContent>
         <Formik
           initialValues={{
-            oldPassword: '',
-            newPassword: '',
-            newPasswordConfirmation: '',
+            oldPassword: "",
+            newPassword: "",
+            newPasswordConfirmation: "",
           }}
           validationSchema={EditPasswordSchema}
           onSubmit={(values, actions) => {
-            setTimeout(() => {
-              const { newPasswordConfirmation, ...editPasswordData } = values;
-              toast({
-                title: '密码修改成功',
-                description: JSON.stringify(editPasswordData, null, 2),
-                status: 'success',
+            // setTimeout(() => {
+            //   const { newPasswordConfirmation, ...editPasswordData } = values;
+            //   toast({
+            //     title: '密码修改成功',
+            //     description: JSON.stringify(editPasswordData, null, 2),
+            //     status: 'success',
+            //   });
+            //   actions.setSubmitting(false);
+            //   onClose();
+            // }, 1000);
+            fetch("/api/profile", {
+              method: "PUT",
+              body: JSON.stringify({
+                oldPassword: values.oldPassword,
+                password: values.newPassword,
+              }),
+              headers: {
+                "content-type": "application/json",
+                Authorization:
+                  "Bearer " + String(localStorage.getItem("accessToken")),
+              },
+            })
+              .then((res) => {
+                if (res.ok) {
+                  return res.json();
+                } else {
+                  toast({ title: "修改密码失败" });
+                  actions.setSubmitting(false);
+                }
+              })
+              .then((res) => {
+                toast({ title: "修改密码成功" });
+                localStorage.removeItem("accessToken");
+                actions.setSubmitting(false);
+              })
+              .catch((err) => {
+                toast({ title: "修改密码", description: err.message });
+                actions.setSubmitting(false);
               });
-              actions.setSubmitting(false);
-              onClose();
-            }, 1000);
           }}
         >
           {(formik) => (

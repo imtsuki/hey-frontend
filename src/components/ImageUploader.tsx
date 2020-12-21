@@ -8,17 +8,18 @@ export const ImageUploader: React.FC<{
 }> = ({ onUploadFinished, onImageRemoved }) => {
   const toast = useToast();
   const getUploadParams = () => {
-    return { url: 'https://httpbin.org/post' };
+    return { url: 'http://127.0.0.1:4000/api/upload' };
   };
 
   const handleChangeStatus: IDropzoneProps['onChangeStatus'] = (
-    { meta, remove },
+    { meta, remove, xhr },
     status
   ) => {
-    if (status === 'headers_received') {
+    if (status === 'done') {
       toast({ title: `图片上传成功` });
       if (onUploadFinished) {
-        onUploadFinished('上传成功后的 URL');
+        const res = JSON.parse(xhr?.response);
+        onUploadFinished(res.picture);
       }
     } else if (status === 'aborted') {
       toast({ title: `图片上传失败` });

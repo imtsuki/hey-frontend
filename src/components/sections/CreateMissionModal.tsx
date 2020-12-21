@@ -1,7 +1,7 @@
-import { ImageUploader } from '../ImageUploader';
-import { Button } from '@chakra-ui/react';
-import { Stack } from '@chakra-ui/react';
-import { useToast } from '@chakra-ui/react';
+import { ImageUploader } from "../ImageUploader";
+import { Button } from "@chakra-ui/react";
+import { Stack } from "@chakra-ui/react";
+import { useToast } from "@chakra-ui/react";
 import {
   Modal,
   ModalOverlay,
@@ -10,7 +10,7 @@ import {
   ModalFooter,
   ModalBody,
   ModalCloseButton,
-} from '@chakra-ui/react';
+} from "@chakra-ui/react";
 import {
   FormControl,
   FormLabel,
@@ -18,21 +18,21 @@ import {
   Input,
   Textarea,
   Select,
-} from '@chakra-ui/react';
+} from "@chakra-ui/react";
 import {
   NumberInput,
   NumberInputField,
   NumberInputStepper,
   NumberIncrementStepper,
   NumberDecrementStepper,
-} from '@chakra-ui/react';
-import { Form, Formik } from 'formik';
-import * as Yup from 'yup';
+} from "@chakra-ui/react";
+import { Form, Formik } from "formik";
+import * as Yup from "yup";
 
 const CreateMissionSchema = Yup.object({
-  missionTitle: Yup.string().required('请输入召集令标题'),
-  missionType: Yup.string().required('请选择召集令类型'),
-  missionDescription: Yup.string().required('请输入召集令描述'),
+  missionTitle: Yup.string().required("请输入召集令标题"),
+  missionType: Yup.string().required("请选择召集令类型"),
+  missionDescription: Yup.string().required("请输入召集令描述"),
 });
 
 export const CreateMissionModal: React.FC<{
@@ -46,24 +46,57 @@ export const CreateMissionModal: React.FC<{
       <ModalContent>
         <Formik
           initialValues={{
-            missionTitle: '11',
-            missionType: '',
+            missionTitle: "11",
+            missionType: "",
             missionPeople: 4,
-            missionDeadline: '',
-            missionDescription: '',
-            missionImageUrl: '',
+            missionDeadline: "2020-12-31",
+            missionDescription: "",
+            missionImageUrl: "",
           }}
           validationSchema={CreateMissionSchema}
           onSubmit={(values, actions) => {
-            setTimeout(() => {
-              toast({
-                title: '召集令发布成功',
-                description: JSON.stringify(values, null, 2),
-                status: 'success',
+            // setTimeout(() => {
+            //   toast({
+            //     title: '召集令发布成功',
+            //     description: JSON.stringify(values, null, 2),
+            //     status: 'success',
+            //   });
+            //   actions.setSubmitting(false);
+            //   onClose();
+            // }, 1000);
+            fetch("/api/mission", {
+              method: "POST",
+              body: JSON.stringify({
+                title: values.missionTitle,
+                type: values.missionType,
+                description: values.missionDescription,
+                picture: values.missionImageUrl,
+                people: values.missionPeople,
+                deadline: values.missionDeadline,
+              }),
+              headers: {
+                "content-type": "application/json",
+                Authorization:
+                  "Bearer " + String(localStorage.getItem("accessToken")),
+              },
+            })
+              .then((res) => {
+                if (res.ok) {
+                  return res.json();
+                } else {
+                  toast({ title: "发布失败" });
+                  actions.setSubmitting(false);
+                }
+              })
+              .then((res) => {
+                toast({ title: "发布成功" });
+                console.log(res);
+                actions.setSubmitting(false);
+              })
+              .catch((err) => {
+                toast({ title: "发布失败", description: err.message });
+                actions.setSubmitting(false);
               });
-              actions.setSubmitting(false);
-              onClose();
-            }, 1000);
           }}
         >
           {(formik) => (
@@ -93,7 +126,7 @@ export const CreateMissionModal: React.FC<{
                       id="missionPeople"
                       min={1}
                       onChange={(_, valueAsNumber) =>
-                        formik.setFieldValue('missionPeople', valueAsNumber)
+                        formik.setFieldValue("missionPeople", valueAsNumber)
                       }
                       value={formik.values.missionPeople}
                     >
@@ -147,10 +180,10 @@ export const CreateMissionModal: React.FC<{
                     <FormLabel>召集令介绍图片</FormLabel>
                     <ImageUploader
                       onUploadFinished={(imageUrl) =>
-                        formik.setFieldValue('missionImageUrl', imageUrl)
+                        formik.setFieldValue("missionImageUrl", imageUrl)
                       }
                       onImageRemoved={() =>
-                        formik.setFieldValue('missionImageUrl', '')
+                        formik.setFieldValue("missionImageUrl", "")
                       }
                     />
                   </FormControl>
