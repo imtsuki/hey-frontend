@@ -1,13 +1,13 @@
-import { MainLayout } from '../components/layouts/MainLayout';
-import { MissionEntry } from '../components/MissionEntry';
-import { ShortcutPanel } from '../components/sections/ShortcutPanel';
-import { Card } from '../components/Card';
-import { Box, Flex, Stack, HStack } from '@chakra-ui/react';
-import { Input, InputGroup, InputLeftElement } from '@chakra-ui/react';
-import { SearchIcon } from '@chakra-ui/icons';
-import { Select } from '@chakra-ui/react';
+import { MainLayout } from "../components/layouts/MainLayout";
+import { MissionEntry } from "../components/MissionEntry";
+import { ShortcutPanel } from "../components/sections/ShortcutPanel";
+import { Card } from "../components/Card";
+import { Box, Flex, Stack, HStack } from "@chakra-ui/react";
+import { Input, InputGroup, InputLeftElement } from "@chakra-ui/react";
+import { SearchIcon } from "@chakra-ui/icons";
+import { Select } from "@chakra-ui/react";
 
-import { useQuery } from 'react-query';
+import { useQuery } from "react-query";
 
 interface MissionType {
   missionId: string;
@@ -17,14 +17,17 @@ interface MissionType {
 }
 
 export const Home = () => {
-  const { data } = useQuery<MissionType[], any>('missions', () =>
-    fetch('/api/missions', {
+  const { data } = useQuery<MissionType[], any>("missions", () =>
+    fetch("/api/missions", {
       headers: {
-        Authorization: String(localStorage.getItem('accessToken'))
+        Authorization: "Bearer " + String(localStorage.getItem("accessToken")),
       },
     })
       .then((res) => res.json())
-      .then((res) => res.missions)
+      .then((res) => {
+        console.log(res);
+        return res;
+      })
   );
   return (
     <MainLayout>
@@ -34,9 +37,11 @@ export const Home = () => {
             <Card>
               <HStack>
                 <Select placeholder="筛选召集令类别">
-                  <option value="option1">Option 1</option>
-                  <option value="option2">Option 2</option>
-                  <option value="option3">Option 3</option>
+                  <option value="技术交流">技术交流</option>
+                  <option value="学业探讨">学业探讨</option>
+                  <option value="社会实践">社会实践</option>
+                  <option value="公益志愿者">公益志愿者</option>
+                  <option value="游玩">游玩</option>
                 </Select>
                 <InputGroup>
                   <InputLeftElement
@@ -49,6 +54,7 @@ export const Home = () => {
             </Card>
             {data?.map((mission) => (
               <MissionEntry
+                key={mission.missionId}
                 title={mission.title}
                 description={mission.description}
                 owner={mission.owner}
