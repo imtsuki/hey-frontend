@@ -9,57 +9,77 @@ import {
   FormControl,
   FormLabel,
   FormErrorMessage,
-} from '@chakra-ui/react';
-import { Form, Formik } from 'formik';
-import * as Yup from 'yup';
+  useToast,
+} from "@chakra-ui/react";
+import { Form, Formik } from "formik";
+import * as Yup from "yup";
 
 const SignupSchema = Yup.object({
   username: Yup.string()
-    .matches(/^[a-zA-Z0-9_]+$/, '用户名只能包含字母、数字与下划线')
-    .required('请输入用户名'),
-  password: Yup.string().min(8, '最短密码为 8 位').required('请输入密码'),
+    .matches(/^[a-zA-Z0-9_]+$/, "用户名只能包含字母、数字与下划线")
+    .required("请输入用户名"),
+  password: Yup.string().min(8, "最短密码为 8 位").required("请输入密码"),
   passwordConfirmation: Yup.string()
-    .oneOf([Yup.ref('password')], '两次输入的密码不匹配')
-    .required('请确认密码'),
+    .oneOf([Yup.ref("password")], "两次输入的密码不匹配")
+    .required("请确认密码"),
   phone: Yup.string()
     .matches(
       /^(13[0-9]|14[5|7]|15[0|1|2|3|5|6|7|8|9]|18[0|1|2|3|5|6|7|8|9])\d{8}$/,
-      '手机号码为 11 位数字'
+      "手机号码为 11 位数字"
     )
-    .required('请输入手机号码'),
+    .required("请输入手机号码"),
   identity: Yup.string()
-    .matches(/^\d{18}$/, '正确格式的身份证号为 18 位')
-    .required('请输入身份证号'),
-  eula: Yup.boolean().equals([true], '请同意最终用户许可条款'),
+    .matches(/^\d{18}$/, "正确格式的身份证号为 18 位")
+    .required("请输入身份证号"),
+  eula: Yup.boolean().equals([true], "请同意最终用户许可条款"),
 });
 
 export const SignupForm = () => {
+  const toast = useToast();
   return (
     <Formik
       initialValues={{
-        username: 'alice',
-        password: '12345678',
-        passwordConfirmation: '12345678',
-        phone: '13312345678',
-        identity: '110100199901010101',
-        city: '北京',
+        username: "alice",
+        password: "12345678",
+        passwordConfirmation: "12345678",
+        phone: "13312345678",
+        identity: "110100199901010101",
+        city: "北京",
         eula: true,
       }}
       validationSchema={SignupSchema}
       onSubmit={(values, actions) => {
-        setTimeout(() => {
-          const { passwordConfirmation, eula, ...signupData } = values;
-          alert(JSON.stringify(signupData, null, 2));
-          actions.setSubmitting(false);
-        }, 1000);
+        const { passwordConfirmation, eula, ...signupData } = values;
+        fetch("/api/auth/register", {
+          method: "POST",
+          body: JSON.stringify(signupData),
+          headers: { "content-type": "application/json" },
+        })
+          .then((res) => {
+            if (res.ok) {
+              return res.json();
+            } else {
+              toast({ title: "注册失败" });
+              actions.setSubmitting(false);
+            }
+          })
+          .then((res) => {
+            toast({ title: JSON.stringify(res) });
+            localStorage.setItem("accessToken", res.accessToken);
+            actions.setSubmitting(false);
+          })
+          .catch((err) => {
+            toast({ title: "注册失败", description: err.toString() });
+            actions.setSubmitting(false);
+          });
       }}
     >
       {(formik) => (
         <Form>
           <VStack
             align="center"
-            justify={{ base: 'flex-start' }}
-            direction={{ base: 'column' }}
+            justify={{ base: "flex-start" }}
+            direction={{ base: "column" }}
             wrap="nowrap"
             minH="70vh"
             px={8}
@@ -74,7 +94,7 @@ export const SignupForm = () => {
               </Heading>
             </VStack>
 
-            <Box px={{ base: 0, sm: 8 }} w={{ base: '100%', sm: '30em' }}>
+            <Box px={{ base: 0, sm: 8 }} w={{ base: "100%", sm: "30em" }}>
               <VStack>
                 <Heading as="h2" size="md">
                   基本信息
@@ -183,7 +203,7 @@ export const SignupForm = () => {
             <Button
               type="submit"
               isLoading={formik.isSubmitting}
-              w={{ base: '100%', sm: '26em' }}
+              w={{ base: "100%", sm: "26em" }}
               colorScheme="primary"
             >
               创建账户
