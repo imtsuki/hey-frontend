@@ -18,7 +18,11 @@ interface MissionType {
 
 export const Home = () => {
   const { data } = useQuery<MissionType[], any>('missions', () =>
-    fetch('/api/missions')
+    fetch('/api/missions', {
+      headers: {
+        Authorization: String(localStorage.getItem('accessToken'))
+      },
+    })
       .then((res) => res.json())
       .then((res) => res.missions)
   );
