@@ -8,26 +8,45 @@ import { SearchIcon } from "@chakra-ui/icons";
 import { Select } from "@chakra-ui/react";
 
 import { useQuery } from "react-query";
+import { AppType, UserType } from "./Mission";
+import { useState } from "react";
 
-interface MissionType {
+export interface MissionType {
   missionId: string;
   title: string;
   description: string;
-  owner: string;
+  owner: UserType;
+  isOwner: boolean;
+  type: string;
+  state: string;
+  people: number;
+  deadline: string;
+  applications: AppType[];
 }
 
 export const Home = () => {
-  const { data } = useQuery<MissionType[], any>("missions", () =>
-    fetch("/api/missions", {
-      headers: {
-        Authorization: "Bearer " + String(localStorage.getItem("accessToken")),
-      },
-    })
-      .then((res) => res.json())
-      .then((res) => {
-        console.log(res);
-        return res;
-      })
+  const [missionType, setMissionType] = useState("");
+  const [missionKeyword, setMissionKeyword] = useState("");
+
+  const { data } = useQuery<MissionType[], any>(
+    `missions?keyword=${missionKeyword}?type=${missionType}`,
+    () => {
+      return fetch(
+        `/api/missions?` +
+          new URLSearchParams({ keyword: missionKeyword, type: missionType }),
+        {
+          headers: {
+            Authorization:
+              "Bearer " + String(localStorage.getItem("accessToken")),
+          },
+        }
+      )
+        .then((res) => res.json())
+        .then((res) => {
+          console.log(res);
+          return res;
+        });
+    }
   );
   return (
     <MainLayout>
@@ -36,7 +55,10 @@ export const Home = () => {
           <Stack>
             <Card>
               <HStack>
-                <Select placeholder="筛选召集令类别">
+                <Select
+                  placeholder="筛选召集令类别"
+                  onChange={(event) => setMissionType(event.target.value)}
+                >
                   <option value="技术交流">技术交流</option>
                   <option value="学业探讨">学业探讨</option>
                   <option value="社会实践">社会实践</option>
@@ -48,7 +70,11 @@ export const Home = () => {
                     pointerEvents="none"
                     children={<SearchIcon color="gray.300" />}
                   />
-                  <Input placeholder="关键字搜索" />
+                  <Input
+                    placeholder="关键字搜索"
+                    value={missionKeyword}
+                    onChange={(event) => setMissionKeyword(event.target.value)}
+                  />
                 </InputGroup>
               </HStack>
             </Card>
@@ -56,8 +82,9 @@ export const Home = () => {
               <MissionEntry
                 key={mission.missionId}
                 title={mission.title}
+                type={mission.type}
                 description={mission.description}
-                owner={mission.owner}
+                owner={mission.owner.username}
                 link={`/mission/${mission.missionId}`}
               />
             ))}

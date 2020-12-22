@@ -29,16 +29,29 @@ import {
 import { Form, Formik } from "formik";
 import * as Yup from "yup";
 
-const CreateMissionSchema = Yup.object({
+const EditMissionSchema = Yup.object({
   missionTitle: Yup.string().required("请输入召集令标题"),
   missionType: Yup.string().required("请选择召集令类型"),
   missionDescription: Yup.string().required("请输入召集令描述"),
 });
 
-export const CreateMissionModal: React.FC<{
+export const EditMissionModal: React.FC<{
   isOpen: boolean;
   onClose: () => void;
-}> = ({ isOpen, onClose }) => {
+  missionId: string;
+  missionTitle: string;
+  missionPeople: number;
+  missionType: string;
+  missionDescription: string;
+}> = ({
+  isOpen,
+  onClose,
+  missionId,
+  missionTitle,
+  missionPeople,
+  missionType,
+  missionDescription,
+}) => {
   const toast = useToast();
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="xl">
@@ -46,31 +59,20 @@ export const CreateMissionModal: React.FC<{
       <ModalContent>
         <Formik
           initialValues={{
-            missionTitle: "标题",
-            missionType: "",
-            missionPeople: 1,
+            missionTitle: missionTitle,
+            missionType: missionType,
+            missionPeople: missionPeople,
             missionDeadline: "2020-12-31",
-            missionDescription: "描述",
-            missionImageUrl: "",
+            missionDescription: missionDescription,
           }}
-          validationSchema={CreateMissionSchema}
+          validationSchema={EditMissionSchema}
           onSubmit={(values, actions) => {
-            // setTimeout(() => {
-            //   toast({
-            //     title: '召集令发布成功',
-            //     description: JSON.stringify(values, null, 2),
-            //     status: 'success',
-            //   });
-            //   actions.setSubmitting(false);
-            //   onClose();
-            // }, 1000);
-            fetch("/api/mission", {
-              method: "POST",
+            fetch(`/api/mission/${missionId}`, {
+              method: "PUT",
               body: JSON.stringify({
                 title: values.missionTitle,
                 type: values.missionType,
                 description: values.missionDescription,
-                picture: values.missionImageUrl,
                 people: values.missionPeople,
                 deadline: values.missionDeadline,
               }),
@@ -84,24 +86,24 @@ export const CreateMissionModal: React.FC<{
                 if (res.ok) {
                   return res.json();
                 } else {
-                  toast({ title: "发布失败" });
+                  toast({ title: "修改失败" });
                   actions.setSubmitting(false);
                 }
               })
               .then((res) => {
-                toast({ title: "发布成功" });
+                toast({ title: "修改成功" });
                 console.log(res);
                 actions.setSubmitting(false);
               })
               .catch((err) => {
-                toast({ title: "发布失败", description: err.message });
+                toast({ title: "修改失败", description: err.message });
                 actions.setSubmitting(false);
               });
           }}
         >
           {(formik) => (
             <Form>
-              <ModalHeader>发布召集令</ModalHeader>
+              <ModalHeader>修改召集令</ModalHeader>
               <ModalBody>
                 <Stack>
                   <FormControl
@@ -176,17 +178,6 @@ export const CreateMissionModal: React.FC<{
                       {formik.errors.missionDescription}
                     </FormErrorMessage>
                   </FormControl>
-                  <FormControl>
-                    <FormLabel>召集令介绍图片</FormLabel>
-                    <ImageUploader
-                      onUploadFinished={(imageUrl) =>
-                        formik.setFieldValue("missionImageUrl", imageUrl)
-                      }
-                      onImageRemoved={() =>
-                        formik.setFieldValue("missionImageUrl", "")
-                      }
-                    />
-                  </FormControl>
                 </Stack>
               </ModalBody>
               <ModalFooter>
@@ -196,7 +187,7 @@ export const CreateMissionModal: React.FC<{
                   type="submit"
                   isLoading={formik.isSubmitting}
                 >
-                  发布
+                  修改
                 </Button>
                 <Button variant="ghost" onClick={onClose}>
                   取消

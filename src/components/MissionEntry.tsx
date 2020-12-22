@@ -9,10 +9,12 @@ export interface MissionEntryProps {
   description?: string;
   owner?: string;
   link?: string;
+  type?: string;
 }
 
 export const MissionEntry: React.FC<MissionEntryProps> = ({
   title = "机器人调度系统开发",
+  type = "科技交流",
   description = "机器人集群调度系统开发，我公司会提供软件概要设计框架，以及交管算法。外包工程师，按照我们的要求配合完成开发。机器人集群调度系统开发，我公司会提供软件概要设计框架，以及交管算法。外包工程师，按照我们的要求配合完成开发。",
   owner = "Tsuki",
   link = "/mission/1234",
@@ -31,6 +33,7 @@ export const MissionEntry: React.FC<MissionEntryProps> = ({
           {owner} · 发布
         </Text>
         <Heading size="md">{title}</Heading>
+        <Heading size="md">{type}</Heading>
         <Text>{description}</Text>
         <ArrowForwardIcon
           opacity="0"
