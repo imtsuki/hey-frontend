@@ -67,6 +67,7 @@ export const SignupForm = () => {
             toast({ title: JSON.stringify(res) });
             localStorage.setItem("accessToken", res.accessToken);
             actions.setSubmitting(false);
+            window.location.reload();
           })
           .catch((err) => {
             toast({ title: "注册失败", description: err.toString() });

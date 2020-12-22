@@ -17,6 +17,7 @@ import {
   Textarea,
 } from "@chakra-ui/react";
 import { Form, Formik } from "formik";
+import { useQueryClient } from "react-query";
 import * as Yup from "yup";
 
 const CreateApplicationSchema = Yup.object({
@@ -39,13 +40,14 @@ export const CreateOrEditApplicationModal: React.FC<{
   applicationId = "",
 }) => {
   const toast = useToast();
+  const queryClient = useQueryClient();
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="xl">
       <ModalOverlay />
       <ModalContent>
         <Formik
           initialValues={{
-            applicationDescription: "描述",
+            applicationDescription: description,
           }}
           validationSchema={CreateApplicationSchema}
           onSubmit={(values, actions) => {
@@ -84,6 +86,7 @@ export const CreateOrEditApplicationModal: React.FC<{
               .then((res) => {
                 toast({ title: "成功" });
                 console.log(res);
+                queryClient.invalidateQueries(`${missionId}/userappliaction`);
                 actions.setSubmitting(false);
               })
               .catch((err) => {

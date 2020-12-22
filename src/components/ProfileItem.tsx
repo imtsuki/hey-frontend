@@ -1,4 +1,4 @@
-import * as React from 'react';
+import * as React from "react";
 import {
   Stack,
   Text,
@@ -15,20 +15,30 @@ import {
   useDisclosure,
   Input,
   useToast,
-} from '@chakra-ui/react';
-import { EditLink } from './EditLink';
-import { Form, Formik } from 'formik';
+} from "@chakra-ui/react";
+import { EditLink } from "./EditLink";
+import { Form, Formik } from "formik";
+import { useQueryClient } from "react-query";
 
 export const ProfileItem: React.FC<{
   label?: string;
-  key?: string;
+  profileKey?: string;
   value?: string;
   isEditable?: boolean;
   hideLabel?: boolean;
   onEdit?: (value: string) => void;
-}> = ({ label, key, value, onEdit, isEditable = false, hideLabel = false }) => {
+}> = ({
+  label,
+  profileKey,
+  value,
+  onEdit,
+  isEditable = false,
+  hideLabel = false,
+}) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
+  const queryClient = useQueryClient();
+
   return (
     <>
       <Stack direction="row" align="bottom">
@@ -42,17 +52,21 @@ export const ProfileItem: React.FC<{
           <ModalOverlay />
           <ModalContent>
             <Formik
-              initialValues={{ newValue: '' }}
+              initialValues={{ newValue: "" }}
               onSubmit={(values, actions) => {
-                setTimeout(() => {
-                  toast({
-                    title: `${label}修改成功`,
-                    description: JSON.stringify(values, null, 2),
-                    status: 'success',
-                  });
+                fetch("/api/profile", {
+                  headers: {
+                    Authorization:
+                      "Bearer " + String(localStorage.getItem("accessToken")),
+                    "content-type": "application/json",
+                  },
+                  method: "PUT",
+                  body: JSON.stringify({ [profileKey ?? ""]: values.newValue }),
+                }).then((res) => {
                   actions.setSubmitting(false);
+                  queryClient.invalidateQueries("profile");
                   onClose();
-                }, 1000);
+                });
               }}
             >
               {(formik) => (

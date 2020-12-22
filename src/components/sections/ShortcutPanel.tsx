@@ -6,6 +6,7 @@ import { Button, useToast } from "@chakra-ui/react";
 import { HStack } from "@chakra-ui/react";
 import { useDisclosure } from "@chakra-ui/react";
 import { CreateOrEditApplicationModal } from "./CreateOrEditApplicationModal";
+import { useQueryClient } from "react-query";
 
 const CreateMissionShortcut = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -31,6 +32,7 @@ export const EditMissionShortcut: React.FC<{
   missionDescription,
 }) => {
   const toast = useToast();
+  const queryClient = useQueryClient();
   const { isOpen, onOpen, onClose } = useDisclosure();
   return (
     <>
@@ -68,6 +70,7 @@ export const EditMissionShortcut: React.FC<{
             })
             .then((res) => {
               toast({ title: "删除成功" });
+              queryClient.invalidateQueries(`mission/${missionId}`);
               console.log(res);
             })
             .catch((err) => {
@@ -123,6 +126,14 @@ export const ShortcutPanel = () => (
     <HStack justify="center">
       <CreateMissionShortcut />
       <EditPasswordShortcut />
+      <Button
+        onClick={() => {
+          localStorage.removeItem("accessToken");
+          window.location.reload();
+        }}
+      >
+        登出
+      </Button>
     </HStack>
   </Card>
 );

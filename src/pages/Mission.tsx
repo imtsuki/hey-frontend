@@ -1,24 +1,25 @@
-import * as R from "ramda";
-import { useParams } from "react-router-dom";
+import { Redirect, useParams } from "react-router-dom";
 import { HStack, Box, Stack, Flex, toast, useToast } from "@chakra-ui/react";
-import { useQuery } from "react-query";
+import { useQuery, useQueryClient } from "react-query";
 import { Badge, Tag, Button, IconButton } from "@chakra-ui/react";
 import { List, ListItem } from "@chakra-ui/react";
 import { Text, Heading } from "@chakra-ui/react";
 import { Avatar, AvatarGroup } from "@chakra-ui/react";
 import { CheckIcon, CloseIcon } from "@chakra-ui/icons";
-
 import { MainLayout } from "../components/layouts/MainLayout";
 import { ShortcutPanel } from "../components/sections/ShortcutPanel";
 import { Card } from "../components/Card";
 import { MissionType } from "./Home";
-import { string } from "yup";
 import { EditMissionShortcut } from "../components/sections/ShortcutPanel";
 import { CreateOrEditApplicationShortcut } from "../components/sections/ShortcutPanel";
+import { Image } from "@chakra-ui/react";
 
 export interface UserType {
   username: string;
   description: string;
+  city: string;
+  phone: string;
+  missions: MissionType[];
 }
 export interface AppType {
   id: string;
@@ -32,49 +33,59 @@ export interface AppType {
 export const Mission = () => {
   const toast = useToast();
   const { missionId } = useParams<{ missionId: string }>();
+  const queryClient = useQueryClient();
 
-  const { data: missionData } = useQuery<MissionType, any>("mission", () =>
-    fetch(`/api/mission/${missionId}`, {
-      headers: {
-        Authorization: "Bearer " + String(localStorage.getItem("accessToken")),
-      },
-    })
-      .then((res) => res.json())
-      .then((res) => {
-        console.log(res);
-        return res;
+  const { data: missionData } = useQuery<MissionType, any>(
+    `mission/${missionId}`,
+    () =>
+      fetch(`/api/mission/${missionId}`, {
+        headers: {
+          Authorization:
+            "Bearer " + String(localStorage.getItem("accessToken")),
+        },
       })
+        .then((res) => res.json())
+        .then((res) => {
+          console.log(res);
+          return res;
+        })
   );
 
-  const { data: appData } = useQuery<AppType[], any>("applications", () =>
-    fetch(`/api/mission/${missionId}/applications`, {
-      headers: {
-        Authorization: "Bearer " + String(localStorage.getItem("accessToken")),
-      },
-    })
-      .then((res) => res.json())
-      .then((res) => {
-        console.log(res);
-        return res;
+  const { data: appData } = useQuery<AppType[], any>(
+    `${missionId}/applications`,
+    () =>
+      fetch(`/api/mission/${missionId}/applications`, {
+        headers: {
+          Authorization:
+            "Bearer " + String(localStorage.getItem("accessToken")),
+        },
       })
+        .then((res) => res.json())
+        .then((res) => {
+          console.log(res);
+          return res;
+        })
   );
 
-  const { data: myAppData } = useQuery<AppType, any>("userappliaction", () =>
-    fetch(`/api/user/${missionId}/application`, {
-      headers: {
-        Authorization: "Bearer " + String(localStorage.getItem("accessToken")),
-      },
-    })
-      .then((res) => res.json())
-      .then((res) => {
-        if (JSON.stringify(res) == "{}") {
-          return undefined;
-        }
-        return res;
+  const { data: myAppData } = useQuery<AppType, any>(
+    `${missionId}/userappliaction`,
+    () =>
+      fetch(`/api/user/${missionId}/application`, {
+        headers: {
+          Authorization:
+            "Bearer " + String(localStorage.getItem("accessToken")),
+        },
       })
+        .then((res) => res.json())
+        .then((res) => {
+          if (JSON.stringify(res) == "{}") {
+            return undefined;
+          }
+          return res;
+        })
   );
 
-  return (
+  return localStorage.getItem("accessToken") ? (
     <MainLayout>
       <Flex width="100%" justify="space-between" mt={2} zIndex={1}>
         <Box width="100%" flex={7} mr={1}>
@@ -113,6 +124,16 @@ export const Mission = () => {
                 召集令描述
               </Heading>
               <Text>{missionData?.description}</Text>
+
+              <Heading as="h2" size="md">
+                召集令图片
+              </Heading>
+              {/* <img src={missionData?.picture} /> */}
+              <Image
+                objectFit="cover"
+                src={missionData?.picture}
+                alt={missionData?.title}
+              />
               {missionData?.isOwner && missionData.applications?.length == 0 ? (
                 <div>
                   <HStack>
@@ -148,10 +169,13 @@ export const Mission = () => {
                     {appData
                       .filter((x) => x.state == "同意")
                       .map((x) => (
-                        <Avatar
-                          key={x.apUser.username}
-                          name={x.apUser.username}
-                        />
+                        <div>
+                          <Avatar
+                            key={x.apUser.username}
+                            name={x.apUser.username}
+                          />
+                          <Text>{x.apUser.username}</Text>
+                        </div>
                       ))}
                   </AvatarGroup>
                 </div>
@@ -213,6 +237,9 @@ export const Mission = () => {
                                       })
                                       .then((res) => {
                                         toast({ title: "接受成功" });
+                                        queryClient.invalidateQueries(
+                                          `${missionId}/applications`
+                                        );
                                         console.log(res);
                                       })
                                       .catch((err) => {
@@ -249,16 +276,19 @@ export const Mission = () => {
                                         if (res.ok) {
                                           return res.json();
                                         } else {
-                                          toast({ title: "接受失败" });
+                                          toast({ title: "拒绝失败" });
                                         }
                                       })
                                       .then((res) => {
-                                        toast({ title: "接受成功" });
+                                        toast({ title: "拒绝成功" });
+                                        queryClient.invalidateQueries(
+                                          `${missionId}/applications`
+                                        );
                                         console.log(res);
                                       })
                                       .catch((err) => {
                                         toast({
-                                          title: "接受失败",
+                                          title: "拒绝失败",
                                           description: err.message,
                                         });
                                       });
@@ -275,7 +305,9 @@ export const Mission = () => {
               ) : null}
 
               {/* 以下是接令者界面 */}
-              {missionData && !missionData.isOwner ? (
+              {missionData &&
+              !missionData.isOwner &&
+              missionData.state == "待响应" ? (
                 <div>
                   {myAppData ? (
                     <div>
@@ -286,7 +318,7 @@ export const Mission = () => {
                         <Text fontSize="sm" color="gray.500">
                           申请状态
                         </Text>
-                        <Badge colorScheme="purple">{myAppData.state}</Badge>
+                        <Badge>{myAppData.state}</Badge>
                       </HStack>
                       <Text>{myAppData.description}</Text>
                       {myAppData.state == "待处理" ? (
@@ -329,6 +361,9 @@ export const Mission = () => {
                                   })
                                   .then((res) => {
                                     toast({ title: "删除成功" });
+                                    queryClient.invalidateQueries(
+                                      `${missionId}/userappliaction`
+                                    );
                                     console.log(res);
                                   })
                                   .catch((err) => {
@@ -380,9 +415,11 @@ export const Mission = () => {
               </Flex>
             </Stack>
           </Card>
-          {/* <ShortcutPanel /> */}
+          <ShortcutPanel />
         </Stack>
       </Flex>
     </MainLayout>
+  ) : (
+    <Redirect to="/" />
   );
 };

@@ -28,6 +28,7 @@ import {
 } from "@chakra-ui/react";
 import { Form, Formik } from "formik";
 import * as Yup from "yup";
+import { useQueryClient } from "react-query";
 
 const EditMissionSchema = Yup.object({
   missionTitle: Yup.string().required("请输入召集令标题"),
@@ -53,6 +54,7 @@ export const EditMissionModal: React.FC<{
   missionDescription,
 }) => {
   const toast = useToast();
+  const queryClient = useQueryClient();
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="xl">
       <ModalOverlay />
@@ -93,6 +95,7 @@ export const EditMissionModal: React.FC<{
               .then((res) => {
                 toast({ title: "修改成功" });
                 console.log(res);
+                queryClient.invalidateQueries(`mission/${missionId}`);
                 actions.setSubmitting(false);
               })
               .catch((err) => {

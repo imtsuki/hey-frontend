@@ -10,6 +10,7 @@ import { Select } from "@chakra-ui/react";
 import { useQuery } from "react-query";
 import { AppType, UserType } from "./Mission";
 import { useState } from "react";
+import { Redirect } from "react-router-dom";
 
 export interface MissionType {
   missionId: string;
@@ -22,6 +23,7 @@ export interface MissionType {
   people: number;
   deadline: string;
   applications: AppType[];
+  picture: string;
 }
 
 export const Home = () => {
@@ -48,7 +50,8 @@ export const Home = () => {
         });
     }
   );
-  return (
+
+  return localStorage.getItem("accessToken") ? (
     <MainLayout>
       <Flex width="100%" justify="space-between" mt={2} zIndex={1}>
         <Box width="100%" flex={7} mr={1}>
@@ -95,5 +98,7 @@ export const Home = () => {
         </Box>
       </Flex>
     </MainLayout>
+  ) : (
+    <Redirect to="/" />
   );
 };

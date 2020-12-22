@@ -63,6 +63,7 @@ export const LoginForm = () => {
                 toast({ title: JSON.stringify(res) });
                 localStorage.setItem("accessToken", res.accessToken);
                 actions.setSubmitting(false);
+                window.location.reload();
               })
               .catch((err) => {
                 toast({ title: "登录失败", description: err.message });
